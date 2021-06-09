@@ -6,7 +6,7 @@
 #include "utiles.h"
 
 const int CLOE_NO_ENCONTRADA = 0;
-const int MAX_TIEMPO_PARA_GANAR = 0; 
+const int MAX_TIEMPO_PARA_GANAR = 120; 
 
 int main(){
 
@@ -24,12 +24,13 @@ int main(){
 	while (estado_juego(juego) == CLOE_NO_ENCONTRADA){
         realizar_jugada(&juego, jugada);
     }
-    detener_cronometro();
-    if (tiempo_actual() <= MAX_TIEMPO_PARA_GANAR){
+    system("clear");
+    if ((tiempo_actual() + juego.personaje.tiempo_perdido) <= MAX_TIEMPO_PARA_GANAR){
         printf("GANASTE!!!!\nFinalizates el juego en:  %.0f segundos.\n", tiempo_actual());
     } else {
-        printf("Perdiste :´( \nFinalizates el juego en:  %.0f segundos.\n", tiempo_actual());
+        printf("PERDISTE :þ \nFinalizates el juego en:  %.0f segundos.\n", tiempo_actual());
     }
+    detener_cronometro();
 	
 
 	return 0;

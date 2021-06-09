@@ -42,7 +42,7 @@ const char PARDO = 'G';
 
 
 void mensaje_inicio_programa(){
-	printf("\tBienvenido al test de personalidad de los escandalosos\n\n\n\n");
+	printf("\tBienvenido al juego de escandaloso contra reloj©\n ¦Antes de empezar a jugar se le hara un test de personalidad para saber que tipo de escandalozo es¦\n\n");
 }
 
 /*
