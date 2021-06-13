@@ -24,6 +24,9 @@
 #define ENCENDER_APAGAR_VELA 'V'
 #define ENCENDER_APAGAR_BENGALA 'E'
 #define TIEMPO_RESTANTE 'T'
+#define STR_PILAS "pilas"
+#define STR_VELAS "velas"
+#define STR_BENGALAS "bengalas"
 #define MAX_PALABRA 256
 
 const int MAX_FILAS = 20;
@@ -200,20 +203,32 @@ void imprimir_elementos_en_mochila(juego_t juego){
 	
 	for (int i = 0; i < juego.personaje.cantidad_elementos; i++){
 		if (juego.personaje.mochila[i].tipo == PILA){
-			mov_pilas = juego.personaje.mochila[i].movimientos_restantes;
 			contador_pilas++;
+			if(juego.personaje.mochila [juego.personaje.elemento_en_uso].tipo == PILA){
+				mov_pilas = juego.personaje.mochila[juego.personaje.elemento_en_uso].movimientos_restantes;
+			} else {
+				mov_pilas = juego.personaje.mochila[i].movimientos_restantes;
+			}
 		} else if (juego.personaje.mochila[i].tipo == VELA){
-			mov_velas = juego.personaje.mochila[i].movimientos_restantes;
 			contador_velas++;
+			if(juego.personaje.mochila [juego.personaje.elemento_en_uso].tipo == VELA){
+				mov_velas = juego.personaje.mochila[juego.personaje.elemento_en_uso].movimientos_restantes;
+			} else {
+				mov_velas = juego.personaje.mochila[i].movimientos_restantes;
+			}
 		} else if (juego.personaje.mochila[i].tipo == BENGALA){
-			mov_bengalas = juego.personaje.mochila[i].movimientos_restantes;
 			contador_bengalas++;
+			if(juego.personaje.mochila [juego.personaje.elemento_en_uso].tipo == BENGALA){
+				mov_bengalas = juego.personaje.mochila[juego.personaje.elemento_en_uso].movimientos_restantes;
+			} else {
+				mov_bengalas = juego.personaje.mochila[i].movimientos_restantes;
+			}
 		}
 	}
 	printf("\n");
 	printf("\t\t|Tenes %i pilas con %i movimientos cada una  |\n", contador_pilas, mov_pilas);
 	printf("\t\t|Tenes %i velas con %i movimientos cada una   |\n", contador_velas, mov_velas);
-	printf("\t\t|Tenes %i bengalas con %i movimientos cada una|\t", contador_bengalas, mov_bengalas);
+	printf("\t\t|Tenes %i bengalas con %i movimientos cada una|\n", contador_bengalas, mov_bengalas);
 }
 
 void crear_campo(char campo[MAX_FILAS][MAX_COLUMAS]){
@@ -226,7 +241,7 @@ void crear_campo(char campo[MAX_FILAS][MAX_COLUMAS]){
 
 void mensaje_si_cloe_visible(juego_t juego){
 	if(juego.chloe_visible == true)
-		printf("Cloe visible!!\n");
+		printf("Cloe visible!! Rum Forest rum»»»\n");
 }
 
 void visibilizar_cloe(juego_t juego, char campo[MAX_FILAS][MAX_COLUMAS]){
@@ -417,6 +432,7 @@ void encotrar_obstaculo(juego_t* juego){
 		} else if((juego->personaje.posicion.fil == juego->herramientas[i].posicion.fil) && (juego->personaje.posicion.col == juego->herramientas[i].posicion.col)){
 			juego->herramientas[i].posicion.fil = MAX_FILAS;
 			juego->herramientas[i].posicion.col = MAX_COLUMAS;
+			juego->personaje.cantidad_elementos++;
 			if(juego->herramientas[i].tipo == PILA){
 				juego->personaje.mochila[juego->personaje.cantidad_elementos].tipo = PILA;
 				juego->personaje.mochila[juego->personaje.cantidad_elementos].movimientos_restantes = DURACION_MOVIMIENTOS_LINTERNA;
@@ -503,6 +519,17 @@ void intercambio_herramienta_uso_con_ultima(juego_t* juego, int posicion_herrami
 	juego->personaje.elemento_en_uso = juego->personaje.cantidad_elementos-1;
 }
 
+void movimiento_vela(juego_t *juego){
+	if(juego->personaje.mochila [juego->personaje.elemento_en_uso].tipo == VELA){
+		ocultar_elementos_del_campo(juego);		
+		iluminar_elementos_alrrededor_personaje(juego, juego->personaje.posicion.fil, juego->personaje.posicion.col);
+	}
+}
+
+void mensaje_sin_herramienta_mochila(char herramienta[MAX_PALABRA]){
+	 printf("Te quedastes sin %s\n", herramienta);
+}
+
 void realizar_jugada(juego_t* juego, char jugada){
 
 	int fila_bengala = 0;
@@ -520,6 +547,7 @@ void realizar_jugada(juego_t* juego, char jugada){
 				juego->personaje.mochila[juego->personaje.elemento_en_uso].movimientos_restantes--;
 		}
 		encotrar_obstaculo(juego);
+		movimiento_vela(juego);
 		system("clear");
 		break;
 	case ABAJO:
@@ -528,7 +556,8 @@ void realizar_jugada(juego_t* juego, char jugada){
 			if(juego->personaje.elemento_en_uso != ELEMENTO_NO_USO)
 				juego->personaje.mochila[juego->personaje.elemento_en_uso].movimientos_restantes--;
 		}
-		encotrar_obstaculo(juego);	
+		encotrar_obstaculo(juego);
+		movimiento_vela(juego);
 		system("clear");
 		break;
 	case DERECHA:
@@ -537,7 +566,8 @@ void realizar_jugada(juego_t* juego, char jugada){
 			if(juego->personaje.elemento_en_uso != ELEMENTO_NO_USO)
 				juego->personaje.mochila[juego->personaje.elemento_en_uso].movimientos_restantes--;
 		}
-		encotrar_obstaculo(juego);	
+		encotrar_obstaculo(juego);
+		movimiento_vela(juego);
 		system("clear");
 		break;
 	case IZQUIERDA:
@@ -547,22 +577,24 @@ void realizar_jugada(juego_t* juego, char jugada){
 				juego->personaje.mochila[juego->personaje.elemento_en_uso].movimientos_restantes--;
 		}
 		encotrar_obstaculo(juego);
+		movimiento_vela(juego);
 		system("clear");
 		break;
 	case ENCENDER_APAGAR_LINTERNA:
+		mensaje_sin_herramienta_mochila(STR_PILAS);
 		//Si el personaje quiere encender una linterna.
 		break;
 	case ENCENDER_APAGAR_VELA:
+		system("clear");
 		cantidad_velas = calcular_cantidad_herramienta(juego, VELA);
 		if(cantidad_velas <= SIN_HERRAMIENTA){
-			system("clear");
-			printf("Maestro, te quedastes sin velas\n");
+			mensaje_sin_herramienta_mochila(STR_VELAS);
 		} else if(juego->personaje.mochila [juego->personaje.elemento_en_uso].tipo == BENGALA){
-			system("clear");
 			printf("La bengala esta en uso esta en uso maestro!!!\n");
 		} else if(juego->personaje.mochila [juego->personaje.elemento_en_uso].tipo == VELA){
 			ocultar_elementos_del_campo(juego);
-			system("clear");
+			intercambio_herramienta_uso_con_ultima(juego, juego->personaje.elemento_en_uso);
+			juego->personaje.elemento_en_uso = ELEMENTO_NO_USO;
 			printf("Vela desactivada\n");
 		} else {
 			ocultar_elementos_del_campo(juego);
@@ -575,14 +607,13 @@ void realizar_jugada(juego_t* juego, char jugada){
 				intercambio_herramienta_uso_con_ultima(juego, i);
 			}
 			cantidad_velas--;
-			system("clear");
 		} 
 		break;
 	case ENCENDER_APAGAR_BENGALA:
+		system("clear");
 		cantidad_bengalas = calcular_cantidad_herramienta(juego, BENGALA);
 		if(cantidad_bengalas <= SIN_HERRAMIENTA){
-				system("clear");
-				printf("Maestro, te quedastes sin bengalas\n");
+				mensaje_sin_herramienta_mochila(STR_BENGALAS);
 		} else if(juego->personaje.mochila [juego->personaje.elemento_en_uso].tipo != BENGALA){
 			ocultar_elementos_del_campo(juego);
 			while((juego->personaje.mochila[i].tipo != BENGALA) && (i < juego->personaje.cantidad_elementos)){
@@ -596,9 +627,7 @@ void realizar_jugada(juego_t* juego, char jugada){
 				intercambio_herramienta_uso_con_ultima(juego, i);
 			}
 			cantidad_bengalas--;
-			system("clear");
 		} else {
-			system("clear");
 			printf("La bengala esta en uso esta en uso maestro!!!\n");
 		}
 		break;
@@ -607,10 +636,7 @@ void realizar_jugada(juego_t* juego, char jugada){
 		printf("*Tiempo Actual: %.0f segundos.\n", tiempo_actual());
 		break;
 	}
-	if(juego->personaje.mochila [juego->personaje.elemento_en_uso].tipo == VELA){
-		ocultar_elementos_del_campo(juego);		
-		iluminar_elementos_alrrededor_personaje(juego, juego->personaje.posicion.fil, juego->personaje.posicion.col);
-	}
+	
 
 	if(juego->personaje.mochila[juego->personaje.elemento_en_uso].movimientos_restantes == 0){
 		for (int i = 0; i < juego->personaje.cantidad_elementos; i++){
