@@ -45,7 +45,7 @@ const char LINTERNA = 'L';
 const char VELA = 'V';
 const char BENGALA = 'E';
 const char PILA = 'B';
-const char CLOE = 'C';
+const char CHLOE = 'C';
 
 const int CANTIDAD_LINTERNA_INICIO = 1;
 const int DURACION_MOVIMIENTOS_LINTERNA = 10;
@@ -75,19 +75,21 @@ const int JUEGO_FINALIZADO = -1;
 
 const int DISTANCIA_MANHATTAM = 3;
 
-void cargar_cloe(juego_t* juego){
+const char SIN_MOVIMIENTO = ' ';
+
+void cargar_chloe(juego_t* juego){
 	juego->amiga_chloe.fil = rand() % MAX_FILAS;
 	juego->amiga_chloe.col = rand() % MAX_COLUMAS;	
 }
 
-bool es_posicion_personaje_posicion_cloe(juego_t juego){
+bool es_posicion_personaje_posicion_chloe(juego_t juego){
 	return ((juego.amiga_chloe.fil == juego.personaje.posicion.fil) && (juego.amiga_chloe.col == juego.personaje.posicion.col));
 }
 
 void cargar_personaje(juego_t* juego){
 	juego->personaje.posicion.fil = rand() % MAX_FILAS;
 	juego->personaje.posicion.col = 0;
-	if (es_posicion_personaje_posicion_cloe(*juego)){
+	if (es_posicion_personaje_posicion_chloe(*juego)){
 		juego->personaje.posicion.fil = rand() % MAX_FILAS;
 	}
 }
@@ -239,21 +241,21 @@ void crear_campo(char campo[MAX_FILAS][MAX_COLUMAS]){
 	}
 }
 
-void mensaje_si_cloe_visible(juego_t juego){
+void mensaje_si_chloe_visible(juego_t juego){
 	if(juego.chloe_visible == true)
-		printf("Cloe visible!! Rum Forest rum»»»\n");
+		printf("Chloe visible!! Run Forest run»»»\n");
 }
 
-void visibilizar_cloe(juego_t juego, char campo[MAX_FILAS][MAX_COLUMAS]){
+void visibilizar_chloe(juego_t juego, char campo[MAX_FILAS][MAX_COLUMAS]){
 	if((juego.personaje.tipo == PANDA_OSO) && (tiempo_actual() >=30)){
 		juego.chloe_visible = true;
-		mensaje_si_cloe_visible(juego);
-		campo[juego.amiga_chloe.fil][juego.amiga_chloe.col]=CLOE;
+		mensaje_si_chloe_visible(juego);
+		campo[juego.amiga_chloe.fil][juego.amiga_chloe.col]=CHLOE;
 	}
 }
 
 void mensaje_si_herramientas_activada(juego_t juego){
-	if(juego.personaje.mochila [juego.personaje.elemento_en_uso].tipo == LINTERNA)
+	if(juego.personaje.mochila [juego.personaje.elemento_en_uso].tipo == PILA)
 		printf("Linterna activada!!");
 	if(juego.personaje.mochila [juego.personaje.elemento_en_uso].tipo == VELA)
 		printf("Vela activada!!");
@@ -279,11 +281,17 @@ void mostrar_herramientas_matriz(juego_t juego, char campo[MAX_FILAS][MAX_COLUMA
 	(*primer_herramientas) = max_herramientas;
 }
 
+void mostrar_chloe_matriz(juego_t juego, char campo[MAX_FILAS][MAX_COLUMAS]){
+	if(juego.chloe_visible == true){
+		campo[juego.amiga_chloe.fil][juego.amiga_chloe.col] = CHLOE;
+	}
+}
+
 void imprimir_elementos_campo(juego_t juego, char campo[MAX_FILAS][MAX_COLUMAS]){
 	for (int i = 0; i < MAX_FILAS; i++){
 		printf("\t»");
 		for (int j = 0; j < MAX_COLUMAS; j++){
-			if (campo[i][j]==CLOE){
+			if (campo[i][j]==CHLOE){
 				printf(NEGRO_T BLANCO_F " %c " RESET_COLOR, campo[i][j]);
 			} else if (campo[i][j]== juego.personaje.tipo){
 				printf(AMARILLO_T " %c " RESET_COLOR, campo[i][j]);
@@ -314,7 +322,7 @@ void mostrar_juego(juego_t juego){
 
 	crear_campo(campo);
 
-	visibilizar_cloe(juego, campo);
+	visibilizar_chloe(juego, campo);
 
 	campo[juego.personaje.posicion.fil][juego.personaje.posicion.col]=juego.personaje.tipo;
 
@@ -328,6 +336,8 @@ void mostrar_juego(juego_t juego){
 	mostrar_herramientas_matriz(juego, campo, MAX_VELAS + i, &i);
 	mostrar_herramientas_matriz(juego, campo, MAX_PILAS + i, &i);
 	mostrar_herramientas_matriz(juego, campo, MAX_BENGALAS + i, &i);
+
+	mostrar_chloe_matriz(juego, campo);
 
 /* 	int cantidad_arboles = 0;
 	int cantidad_piedras = 0;
@@ -376,8 +386,9 @@ void inicializar_juego(juego_t* juego, char tipo_personaje){
 	juego->personaje.tipo = tipo_personaje;
 	juego->personaje.cantidad_elementos = 0;
 	juego->personaje.elemento_en_uso = ELEMENTO_NO_USO;
+	juego->personaje.ultimo_movimiento = SIN_MOVIMIENTO;
 
-	cargar_cloe(juego);
+	cargar_chloe(juego);
 	cargar_personaje(juego);
 
 	inicializar_mochila(juego);
@@ -390,7 +401,6 @@ void inicializar_juego(juego_t* juego, char tipo_personaje){
 	cargar_herramientas(juego, VELA, MAX_VELAS + primera_posicion_vector, &primera_posicion_vector);
 	cargar_herramientas(juego, PILA, MAX_PILAS + primera_posicion_vector, &primera_posicion_vector);
 	cargar_herramientas(juego, BENGALA, MAX_BENGALAS + primera_posicion_vector, &primera_posicion_vector);
-
 	mostrar_juego(*juego);
 }
 
@@ -409,7 +419,7 @@ void mensaje_ingresar_jugada(char* jugada){
 	}
 }
 
-void encotrar_obstaculo(juego_t* juego){
+void encotrar_obstaculo_herramienta(juego_t* juego){
 	for (int i = 0; i < juego->cantidad_obstaculos; i++){
 		if((juego->personaje.posicion.fil == juego->obstaculos[i].posicion.fil) && (juego->personaje.posicion.col == juego->obstaculos[i].posicion.col)){
 			juego->obstaculos[i].visible = false;
@@ -464,17 +474,16 @@ int calcular_cantidad_herramienta(juego_t* juego, char herramienta){
 
 void iluminar_campo(juego_t* juego, int posicion_fil, int posicion_col){
 	for (int i = 0; i < juego->cantidad_obstaculos; i++){
-			if((posicion_fil == juego->obstaculos[i].posicion.fil) && (posicion_col == juego->obstaculos[i].posicion.col)){
-				juego->obstaculos[i].visible = true;
-			}
-			if((posicion_fil == juego->herramientas[i].posicion.fil) && (posicion_col == juego->herramientas[i].posicion.col)){
-				juego->herramientas[i].visible = true;
-			}
-			if((posicion_fil == juego->amiga_chloe.fil) && (posicion_col == juego->amiga_chloe.col)){
-				juego->chloe_visible = true;
-			}
+		if((posicion_fil == juego->obstaculos[i].posicion.fil) && (posicion_col == juego->obstaculos[i].posicion.col)){
+			juego->obstaculos[i].visible = true;
 		}
-
+		if((posicion_fil == juego->herramientas[i].posicion.fil) && (posicion_col == juego->herramientas[i].posicion.col)){
+			juego->herramientas[i].visible = true;
+		}
+		if((posicion_fil == juego->amiga_chloe.fil) && (posicion_col == juego->amiga_chloe.col)){
+			juego->chloe_visible = true;
+		}
+	}
 }
 
 void ocultar_elementos_del_campo(juego_t* juego){
@@ -519,6 +528,33 @@ void intercambio_herramienta_uso_con_ultima(juego_t* juego, int posicion_herrami
 	juego->personaje.elemento_en_uso = juego->personaje.cantidad_elementos-1;
 }
 
+void movimiento_linterna(juego_t *juego){
+	if(juego->personaje.mochila[juego->personaje.elemento_en_uso].tipo == PILA){
+		ocultar_elementos_del_campo(juego);
+		if ((juego->personaje.ultimo_movimiento == ARRIBA)){
+			for (int j = 0; j < juego->personaje.posicion.fil-1; j++){
+				iluminar_campo(juego, j, juego->personaje.posicion.col);
+			}
+		} else if ((juego->personaje.ultimo_movimiento == ABAJO)){
+			for (int j = juego->personaje.posicion.fil+1; j < MAX_FILAS; j++){
+				iluminar_campo(juego, j, juego->personaje.posicion.col);
+			}
+		} else if ((juego->personaje.ultimo_movimiento == DERECHA)){
+			for (int j = juego->personaje.posicion.col+1; j < MAX_COLUMAS; j++){
+				iluminar_campo(juego, juego->personaje.posicion.fil, j);
+			}
+		} else if ((juego->personaje.ultimo_movimiento == IZQUIERDA)){
+			for (int j = 0; j < juego->personaje.posicion.col-1; j++){
+				iluminar_campo(juego, juego->personaje.posicion.fil, j);
+			}
+		} else {
+			for (int j = juego->personaje.posicion.col + 1 ; j < MAX_COLUMAS; j++){
+				iluminar_campo(juego, juego->personaje.posicion.fil, j);
+			}
+		}
+	}
+}
+
 void movimiento_vela(juego_t *juego){
 	if(juego->personaje.mochila [juego->personaje.elemento_en_uso].tipo == VELA){
 		ocultar_elementos_del_campo(juego);		
@@ -534,10 +570,15 @@ void realizar_jugada(juego_t* juego, char jugada){
 
 	int fila_bengala = 0;
 	int columna_bengala = 0;
-	int cantidad_bengalas, cantidad_velas;
+	int cantidad_pilas, cantidad_velas, cantidad_bengalas;
 	int i = 0;
 
 	mensaje_ingresar_jugada(&jugada);
+
+	if((jugada == ARRIBA) || (jugada == ABAJO) || (jugada == DERECHA) || (jugada == IZQUIERDA)){
+		juego->personaje.ultimo_movimiento = jugada;
+		printf("Ultimo mov %c\n", juego->personaje.ultimo_movimiento);
+	}
 
 	switch (jugada){
 	case ARRIBA:
@@ -546,8 +587,9 @@ void realizar_jugada(juego_t* juego, char jugada){
 			if(juego->personaje.elemento_en_uso != ELEMENTO_NO_USO)
 				juego->personaje.mochila[juego->personaje.elemento_en_uso].movimientos_restantes--;
 		}
-		encotrar_obstaculo(juego);
+		encotrar_obstaculo_herramienta(juego);
 		movimiento_vela(juego);
+		movimiento_linterna(juego);
 		system("clear");
 		break;
 	case ABAJO:
@@ -556,8 +598,9 @@ void realizar_jugada(juego_t* juego, char jugada){
 			if(juego->personaje.elemento_en_uso != ELEMENTO_NO_USO)
 				juego->personaje.mochila[juego->personaje.elemento_en_uso].movimientos_restantes--;
 		}
-		encotrar_obstaculo(juego);
+		encotrar_obstaculo_herramienta(juego);
 		movimiento_vela(juego);
+		movimiento_linterna(juego);
 		system("clear");
 		break;
 	case DERECHA:
@@ -566,8 +609,9 @@ void realizar_jugada(juego_t* juego, char jugada){
 			if(juego->personaje.elemento_en_uso != ELEMENTO_NO_USO)
 				juego->personaje.mochila[juego->personaje.elemento_en_uso].movimientos_restantes--;
 		}
-		encotrar_obstaculo(juego);
+		encotrar_obstaculo_herramienta(juego);
 		movimiento_vela(juego);
+		movimiento_linterna(juego);
 		system("clear");
 		break;
 	case IZQUIERDA:
@@ -576,13 +620,54 @@ void realizar_jugada(juego_t* juego, char jugada){
 			if(juego->personaje.elemento_en_uso != ELEMENTO_NO_USO)
 				juego->personaje.mochila[juego->personaje.elemento_en_uso].movimientos_restantes--;
 		}
-		encotrar_obstaculo(juego);
+		encotrar_obstaculo_herramienta(juego);
 		movimiento_vela(juego);
 		system("clear");
 		break;
 	case ENCENDER_APAGAR_LINTERNA:
-		mensaje_sin_herramienta_mochila(STR_PILAS);
-		//Si el personaje quiere encender una linterna.
+		system("clear");
+		cantidad_pilas = calcular_cantidad_herramienta(juego, PILA);
+		if(cantidad_pilas <= SIN_HERRAMIENTA){
+			mensaje_sin_herramienta_mochila(STR_PILAS);
+		} else if(juego->personaje.mochila [juego->personaje.elemento_en_uso].tipo == BENGALA){
+			printf("La bengala esta en uso esta en uso maestro!!!\n");
+		} else if(juego->personaje.mochila [juego->personaje.elemento_en_uso].tipo == PILA){
+			ocultar_elementos_del_campo(juego);
+			intercambio_herramienta_uso_con_ultima(juego, juego->personaje.elemento_en_uso);
+			juego->personaje.elemento_en_uso = ELEMENTO_NO_USO;
+			printf("Linterna desactivada\n");
+		} else {
+			ocultar_elementos_del_campo(juego);
+			while((juego->personaje.mochila[i].tipo != PILA) && (i < juego->personaje.cantidad_elementos)){
+				i++;
+			}
+			if(juego->personaje.mochila[i].tipo == PILA){
+				juego->personaje.elemento_en_uso = i;
+				if ((juego->personaje.ultimo_movimiento == ARRIBA)){
+					for (int j = 0; j < juego->personaje.posicion.fil-1; j++){
+						iluminar_campo(juego, j, juego->personaje.posicion.col);
+					}
+				} else if ((juego->personaje.ultimo_movimiento == ABAJO)){
+					for (int j = juego->personaje.posicion.fil+1; j < MAX_FILAS; j++){
+						iluminar_campo(juego, j, juego->personaje.posicion.col);
+					}
+				} else if ((juego->personaje.ultimo_movimiento == DERECHA)){
+					for (int j = juego->personaje.posicion.col+1; j < MAX_COLUMAS; j++){
+						iluminar_campo(juego, juego->personaje.posicion.fil, j);
+					}
+				} else if ((juego->personaje.ultimo_movimiento == IZQUIERDA)){
+					for (int j = 0; j < juego->personaje.posicion.col-1; j++){
+						iluminar_campo(juego, juego->personaje.posicion.fil, j);
+					}
+				} else {
+					for (int j = juego->personaje.posicion.col + 1 ; j < MAX_COLUMAS; j++){
+						iluminar_campo(juego, juego->personaje.posicion.fil, j);
+					}
+				}
+				intercambio_herramienta_uso_con_ultima(juego, juego->personaje.elemento_en_uso);
+			}
+			cantidad_pilas--;
+		} 
 		break;
 	case ENCENDER_APAGAR_VELA:
 		system("clear");
@@ -649,13 +734,15 @@ void realizar_jugada(juego_t* juego, char jugada){
 		
 		juego->personaje.elemento_en_uso = ELEMENTO_NO_USO;
 	}
+
 	mostrar_juego(*juego);
+
 }
 
 int estado_juego(juego_t juego){
 	
 	int estado_juego = EN_JUEGO;
-	if (es_posicion_personaje_posicion_cloe(juego)){
+	if (es_posicion_personaje_posicion_chloe(juego)){
 		estado_juego = JUEGO_FINALIZADO;
 	}
 	return estado_juego;
