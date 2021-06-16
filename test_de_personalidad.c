@@ -89,8 +89,6 @@ void mensaje_selecion_canal_tv(char* canal_tv_seleccion){
 		printf("ERROR!!!.\nNo quiero ser malo pero el dato incresado NO es valido. Ponete la 10 e ingresa:\n1. Anime (%c)\n2. Musica Pop (%c)\n3. Limpieza (%c)\n", CANAL_TV_ANIME, CANAL_TV_MUSICA, CANAL_TV_LIMPIEZA);
 		scanf(" %c", canal_tv_seleccion);
 	}
-
-	system("clear");
 }
 /*
  * Pre: -
@@ -106,8 +104,6 @@ void mensaje_selecion_tipo_comida(char* tipo_comida_selection){
 		printf("ERROR!!!.\nNo quiero ser malo pero el dato incresado NO es valido. Ponete la 10  ingresa:\n1. Bambú (%c)\n2. Pescado (%c)\n3. Focas (%c)\n", COMIDA_BAMBO, COMIDA_PEZCADO, COMIDA_FOCAS);
 		scanf(" %c", tipo_comida_selection);
 	}
-
-	system("clear");
 }
 /*
  * Pre: -
@@ -123,8 +119,6 @@ void mensaje_selecion_piso_edificio(int* numero_piso_edificio_selection){
 		printf("ERROR!!!.\nNo quiero ser malo pero el dato incresado NO es valido. Ponete la 10  ingresa un numero entre %i y %i: ", MIN_PISO_EDIFICIO, MAX_PISO_EDIFICIO);
 		scanf("%i", numero_piso_edificio_selection);
 	}
-
-	system("clear");
 }
 /*
  * Pre: -
@@ -140,8 +134,6 @@ void mensaje_selecion_nivel_grito(int* nivel_grito_selection){
 		printf("ERROR!!!.\nNo quiero ser malo pero el dato incresado NO es valido. Ponete la 10  ingresa un numero entre %i y %i: ", MIN_PODER_GRITO, MAX_PODER_GRITO);
 		scanf("%i", nivel_grito_selection);
 	}
-
-	system("clear");
 }
 /*
  * Pre: Necesito tener el char correspondiente a canal_tv, el cual fue ingresado por el usuario
