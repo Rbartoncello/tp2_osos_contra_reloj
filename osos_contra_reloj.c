@@ -407,7 +407,7 @@ bool es_jugada_ingresada_valida(char jugada){
 
 void mensaje_ingresar_jugada(char* jugada){
 	
-	printf("\nIngrese la jugada que desee realidar\n");
+	printf("\nIngrese la jugada que desee realizar\n");
 	scanf(" %c", jugada);
 
 	while (!es_jugada_ingresada_valida(*jugada)){
