@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <math.h>
+#include <unistd.h>
 #include "test_de_personalidad.h"
 #include "osos_contra_reloj.h"
 #include "utiles.h"
@@ -34,6 +35,7 @@ const int MAX_FILAS = 20;
 const int MAX_COLUMAS = 30;
 const int MAX_ARBOLES = 350;
 const int MAX_PIEDRAS = 80;
+const int MAX_KOALAS = 1;
 const int MAX_PILAS = 30;
 const int MAX_VELAS = 30;
 const int MAX_BENGALAS = 10;
@@ -78,9 +80,9 @@ const int DISTANCIA_MANHATTAM = 3;
 
 const char SIN_MOVIMIENTO = ' ';
 
-void cargar_chloe(juego_t* juego){
-	juego->amiga_chloe.fil = rand() % MAX_FILAS;
-	juego->amiga_chloe.col = rand() % MAX_COLUMAS;	
+void cargar_chloe(coordenada_t* chloe){
+	chloe->fil = rand() % MAX_FILAS;
+	chloe->col = rand() % MAX_COLUMAS;	
 }
 
 bool es_posicion_personaje_posicion_chloe(juego_t juego){
@@ -95,55 +97,41 @@ void cargar_personaje(juego_t* juego){
 	}
 }
 
-void cargar_mochila_inicio(juego_t* juego, char item, int max_items, int duracion_movimiento, int* primer_item){
-	for (int i = *primer_item; i < max_items; i++){
-		juego->personaje.mochila[i].tipo = item;
-		juego->personaje.mochila[i].movimientos_restantes = duracion_movimiento;
+void cargar_mochila_inicio(personaje_t* personaje, char item, int max_items, int duracion_movimiento, int primer_item){
+	for (int i = primer_item; i < max_items; i++){
+		personaje->mochila[i].tipo = item;
+		personaje->mochila[i].movimientos_restantes = duracion_movimiento;
+		personaje->cantidad_elementos++;
 	}
-	(*primer_item) = max_items;
 }
 
 bool es_alguna_herramienta(juego_t juego, int i){
 	return ((juego.personaje.mochila[i].tipo == PILA) || (juego.personaje.mochila[i].tipo == VELA) || (juego.personaje.mochila[i].tipo == BENGALA));
 }
 
-void calcular_cantidad_elementos(juego_t* juego){
-	int i = 0;
-
-	while(es_alguna_herramienta(*juego, i)){
-		juego->personaje.cantidad_elementos++;
-		i++;
-	}	
-}
-
 void inicializar_mochila(juego_t* juego){
 	int cantidad_inicio_vela = 0;
 	int cantidad_inicio_bengala = 0;
 	int duracion_tiempo_linterna = 0;
-	int primera_posicion_vector = 0;
+	juego->personaje.cantidad_elementos = 0;
 
 	if(juego->personaje.tipo == PARDO_OSO)
 		duracion_tiempo_linterna = DURACION_MOVIMIENTOS_LINTERNA_PARDO;
 	else
 		duracion_tiempo_linterna = DURACION_MOVIMIENTOS_LINTERNA;
-
-	cargar_mochila_inicio(juego, PILA, CANTIDAD_LINTERNA_INICIO, duracion_tiempo_linterna, &primera_posicion_vector);
+	cargar_mochila_inicio(&juego->personaje, PILA, CANTIDAD_LINTERNA_INICIO, duracion_tiempo_linterna, juego->personaje.cantidad_elementos);
 	
 	if(juego->personaje.tipo == POLAR_OSO)
 		cantidad_inicio_vela = CANTIDAD_VELAS_INICIO_POLAR;
 	else
 		cantidad_inicio_vela = CANTIDAD_VELAS_INICIO;
-
-	cargar_mochila_inicio(juego, VELA, (CANTIDAD_LINTERNA_INICIO + cantidad_inicio_vela), DURACION_MOVIMIENTOS_VELA, &primera_posicion_vector);
+	cargar_mochila_inicio(&juego->personaje, VELA, (CANTIDAD_LINTERNA_INICIO + cantidad_inicio_vela), DURACION_MOVIMIENTOS_VELA, juego->personaje.cantidad_elementos);
 	
 	if(juego->personaje.tipo == PANDA_OSO)
 		cantidad_inicio_bengala = CANTIDAD_BENGALAS_INICIO_PANDA;
 	else
 		cantidad_inicio_bengala = CANTIDAD_BENGALAS_INICIO;
-
-	cargar_mochila_inicio(juego, BENGALA, (CANTIDAD_LINTERNA_INICIO + cantidad_inicio_vela + cantidad_inicio_bengala), DURACION_MOVIMIENTOS_BENGALA, &primera_posicion_vector);
-
-	calcular_cantidad_elementos(juego);
+	cargar_mochila_inicio(&juego->personaje, BENGALA, (CANTIDAD_LINTERNA_INICIO + cantidad_inicio_vela + cantidad_inicio_bengala), DURACION_MOVIMIENTOS_BENGALA, juego->personaje.cantidad_elementos);
 }
 
 bool hay_algo_en_posicion(juego_t juego, int fila, int columna){
@@ -162,69 +150,64 @@ bool hay_algo_en_posicion(juego_t juego, int fila, int columna){
     return hay_algo_en_posicion;
 }
 
-void cargar_obstaculos(juego_t* juego, char item, int max_items, int* primer_item){	
+void cargar_obstaculos(juego_t* juego, char item, int tope, int primer_item){	
 	int posicion_fil = 0;
 	int posicion_col = 0;
-
-	for (int i = (*primer_item) ; i < max_items; i++){
+	for (int i = primer_item ; i < tope; i++){
 		juego->obstaculos[i].tipo = item;
 		posicion_fil = rand() % MAX_FILAS;
 		posicion_col = rand() % MAX_COLUMAS;
-
 		while (hay_algo_en_posicion(*juego, posicion_fil, posicion_col)){
 			posicion_fil = rand() % MAX_FILAS;
 			posicion_col = rand() % MAX_COLUMAS;
 		}
 		juego->obstaculos[i].posicion.fil = posicion_fil;
 		juego->obstaculos[i].posicion.col = posicion_col;
-		(*primer_item) = i;
+		juego->cantidad_obstaculos++;
 	}
 }
 
-void cargar_herramientas(juego_t* juego, char item, int max_items, int* primer_item){
+void cargar_herramientas(juego_t* juego, char item, int tope, int primer_item){
 	int posicion_fil = 0;
 	int posicion_col = 0;
-
-	for (int i = (*primer_item) ; i < max_items; i++){
+	for (int i = primer_item ; i < tope; i++){
 		juego->herramientas[i].tipo = item;
 		posicion_fil = rand() % MAX_FILAS;
 		posicion_col = rand() % MAX_COLUMAS;
-
 		while (hay_algo_en_posicion(*juego, posicion_fil, posicion_col)){
 			posicion_fil = rand() % MAX_FILAS;
 			posicion_col = rand() % MAX_COLUMAS;
 		}
 		juego->herramientas[i].posicion.fil = posicion_fil;
 		juego->herramientas[i].posicion.col = posicion_col;
+		juego->cantidad_herramientas++;
 	}
-	(*primer_item) = max_items;
 }
 
-void imprimir_elementos_en_mochila(juego_t juego){	
+void imprimir_elementos_en_mochila(personaje_t personaje){	
 	int contador_pilas = 0, contador_velas = 0, contador_bengalas = 0;
 	int mov_pilas = 0, mov_velas = 0, mov_bengalas = 0;
-	
-	for (int i = 0; i < juego.personaje.cantidad_elementos; i++){
-		if (juego.personaje.mochila[i].tipo == PILA){
+	for (int i = 0; i < personaje.cantidad_elementos; i++){
+		if (personaje.mochila[i].tipo == PILA){
 			contador_pilas++;
-			if(juego.personaje.mochila [juego.personaje.elemento_en_uso].tipo == PILA){
-				mov_pilas = juego.personaje.mochila[juego.personaje.elemento_en_uso].movimientos_restantes;
+			if(personaje.mochila [personaje.elemento_en_uso].tipo == PILA){
+				mov_pilas = personaje.mochila[personaje.elemento_en_uso].movimientos_restantes;
 			} else {
-				mov_pilas = juego.personaje.mochila[i].movimientos_restantes;
+				mov_pilas = personaje.mochila[i].movimientos_restantes;
 			}
-		} else if (juego.personaje.mochila[i].tipo == VELA){
+		} else if (personaje.mochila[i].tipo == VELA){
 			contador_velas++;
-			if(juego.personaje.mochila [juego.personaje.elemento_en_uso].tipo == VELA){
-				mov_velas = juego.personaje.mochila[juego.personaje.elemento_en_uso].movimientos_restantes;
+			if(personaje.mochila [personaje.elemento_en_uso].tipo == VELA){
+				mov_velas = personaje.mochila[personaje.elemento_en_uso].movimientos_restantes;
 			} else {
-				mov_velas = juego.personaje.mochila[i].movimientos_restantes;
+				mov_velas = personaje.mochila[i].movimientos_restantes;
 			}
-		} else if (juego.personaje.mochila[i].tipo == BENGALA){
+		} else if (personaje.mochila[i].tipo == BENGALA){
 			contador_bengalas++;
-			if(juego.personaje.mochila [juego.personaje.elemento_en_uso].tipo == BENGALA){
-				mov_bengalas = juego.personaje.mochila[juego.personaje.elemento_en_uso].movimientos_restantes;
+			if(personaje.mochila [personaje.elemento_en_uso].tipo == BENGALA){
+				mov_bengalas = personaje.mochila[personaje.elemento_en_uso].movimientos_restantes;
 			} else {
-				mov_bengalas = juego.personaje.mochila[i].movimientos_restantes;
+				mov_bengalas = personaje.mochila[i].movimientos_restantes;
 			}
 		}
 	}
@@ -294,15 +277,17 @@ void imprimir_elementos_campo(juego_t juego, char campo[MAX_FILAS][MAX_COLUMAS])
 			if (campo[i][j]==CHLOE){
 				printf(NEGRO_T BLANCO_F " %c " RESET_COLOR, campo[i][j]);
 			} else if (campo[i][j]== juego.personaje.tipo){
-				printf(AMARILLO_T " %c " RESET_COLOR, campo[i][j]);
+				printf(AZUL_T " %c " RESET_COLOR, campo[i][j]);
 			} else if (campo[i][j]== ARBOL){
 				printf(VERDE_T " %c " RESET_COLOR, campo[i][j]);
 			} else if (campo[i][j]== PIEDRA){
 				printf(CYAN_T " %c " RESET_COLOR, campo[i][j]);
-			} else if (campo[i][j]== BENGALA){
-				printf(ROJO_T " %c " RESET_COLOR, campo[i][j]);
 			} else if (campo[i][j]== KOALAS){
 				printf(MAGENTA_T " %c " RESET_COLOR, campo[i][j]);
+			} else if (campo[i][j]== PILA){
+				printf(AMARILLO_T " %c " RESET_COLOR, campo[i][j]);
+			} else if (campo[i][j]== BENGALA){
+				printf(ROJO_T " %c " RESET_COLOR, campo[i][j]);
 			} else{
 				printf(" %c ", campo[i][j]);
 			}
@@ -325,13 +310,13 @@ void mensaje_tipo_de_jugadas(){
 
 void mensaje_obstaculos_herramientas(){
 	printf("Obstaculos:");
-	printf(" %c (Arbol),", ARBOL);
-	printf(" %c (Piedra) y", PIEDRA);
-	printf(" %c (Koala)\n", KOALAS);
+	printf(VERDE_T " %c " RESET_COLOR"(Arbol),", ARBOL);
+	printf(CYAN_T " %c " RESET_COLOR"(Piedra) y", PIEDRA);
+	printf(MAGENTA_T " %c " RESET_COLOR"(Koala Nom Nom y sus sekoalaces)\n", KOALAS);
 	printf("Herramietas:");
-	printf(" %c (Pila, para la linterna),", PILA);
+	printf(AMARILLO_T " %c " RESET_COLOR"(Pila, para la linterna),", PILA);
 	printf(" %c (Vela) y", VELA);
-	printf(" %c (Bengala)\n", BENGALA);
+	printf(ROJO_T " %c " RESET_COLOR"(Bengala)\n", BENGALA);
 }
 
 void mostrar_juego(juego_t juego){
@@ -351,6 +336,7 @@ void mostrar_juego(juego_t juego){
 	
 	mostrar_obstaculos_matriz(juego, campo, MAX_ARBOLES + i, &i);
 	mostrar_obstaculos_matriz(juego, campo, MAX_PIEDRAS + i, &i);
+	mostrar_obstaculos_matriz(juego, campo, MAX_KOALAS + juego.cantidad_obstaculos, &i);
 
 	i = 0;
 
@@ -361,9 +347,10 @@ void mostrar_juego(juego_t juego){
 	mostrar_chloe_matriz(juego, campo);
 
 	imprimir_elementos_campo(juego, campo);
-	imprimir_elementos_en_mochila(juego);
+	imprimir_elementos_en_mochila(juego.personaje);
 	mensaje_si_herramientas_activada(juego);
-	/* printf("Cantidad de elementos: %i\n", juego.personaje.cantidad_elementos);
+	/* printf("Cantidad de obstaculos: %i\n", juego.cantidad_obstaculos);
+	printf("Cantidad de elementos: %i\n", juego.personaje.cantidad_elementos);
 	printf("Elemento en uso %i\n", juego.personaje.elemento_en_uso);
 	for (int i = 0; i < juego.personaje.cantidad_elementos; i++){
 		
@@ -371,33 +358,56 @@ void mostrar_juego(juego_t juego){
 	} */
 }
 
-void inicializar_juego(juego_t* juego, char tipo_personaje){
-	int primera_posicion_vector = 0;
+void mensaje_como_jugar(personaje_t personaje){
+	double tiempo_perdido_arbol = 0;
+	printf("Despues de un extenso analisis de las respuestas que nos dio llegamos que usted es: ");
+	if(personaje.tipo == POLAR_OSO){
+		printf("- Polar (%c) -\n", POLAR_OSO);
+		tiempo_perdido_arbol = SUMAR_TIEMPO_NO_PARDO_ARBOL;
+	} else if(personaje.tipo == PARDO_OSO){
+		printf("- Pardo (%c) -\n", PARDO_OSO);
+		tiempo_perdido_arbol = SUMAR_TIEMPO_PARDO_ARBOL;
+	} else if(personaje.tipo == PANDA_OSO){
+		printf("- Panda (%c) -\n", PANDA_OSO);
+		tiempo_perdido_arbol = SUMAR_TIEMPO_NO_PARDO_ARBOL;
+	}
+	printf("\nEl objetivo del juego es encontrar a Chloe (" NEGRO_T BLANCO_F " %c " RESET_COLOR") en menos de %i segundos\n", CHLOE, MAX_TIEMPO);
+	printf("\nPara eso vas a tener una mochila con:\n");
+	imprimir_elementos_en_mochila(personaje);
+	printf("\nPero ojo porque si te encotras y te pones en la misma posicion que:\n");
+	printf("\tUn arbol ("VERDE_T " %c " RESET_COLOR") vas a perder %.1f segundos\n", ARBOL, tiempo_perdido_arbol);
+	printf("\tUna piedra ("CYAN_T " %c " RESET_COLOR") vas a perder %.1f segundos\n", PIEDRA, SUMAR_TIEMPO_PIEDRA);	
+	printf("\tEl Koala Nom Nom o sus sekoalaces ("MAGENTA_T " %c " RESET_COLOR") vas a volver la la primera columna\n", KOALAS);
+	printf("\n[Aguarde 15 segundos para que comience el juego de Los Escandalosos contra reloj©]\n");
+	sleep(15);
+	system("clear");
+}
 
+void inicializar_juego(juego_t* juego, char tipo_personaje){
 	juego->chloe_visible=false;
 	juego->obstaculos->visible=false;
 	juego->herramientas->visible=false;
 
-	juego->cantidad_obstaculos=(MAX_ARBOLES + MAX_PIEDRAS);
-	juego->cantidad_herramientas=(MAX_PILAS + MAX_VELAS + MAX_BENGALAS);
+	juego->cantidad_obstaculos = 0;
+	juego->cantidad_herramientas = 0;
 	juego->personaje.tipo = tipo_personaje;
 	juego->personaje.cantidad_elementos = 0;
 	juego->personaje.elemento_en_uso = ELEMENTO_NO_USO;
 	juego->personaje.ultimo_movimiento = SIN_MOVIMIENTO;
 
-	cargar_chloe(juego);
+	cargar_chloe(&(juego->amiga_chloe));
 	cargar_personaje(juego);
 
 	inicializar_mochila(juego);
 
-	cargar_obstaculos(juego, ARBOL, MAX_ARBOLES + 1, &primera_posicion_vector);
-	cargar_obstaculos(juego, PIEDRA, MAX_PIEDRAS + primera_posicion_vector, &primera_posicion_vector);
+	cargar_obstaculos(juego, ARBOL, MAX_ARBOLES, juego->cantidad_obstaculos);
+	cargar_obstaculos(juego, PIEDRA, MAX_PIEDRAS + juego->cantidad_obstaculos, juego->cantidad_obstaculos);
 
-	primera_posicion_vector = 0;
+	cargar_herramientas(juego, VELA, MAX_VELAS, juego->cantidad_herramientas);
+	cargar_herramientas(juego, PILA, MAX_PILAS + juego->cantidad_herramientas, juego->cantidad_herramientas);
+	cargar_herramientas(juego, BENGALA, MAX_BENGALAS + juego->cantidad_herramientas, juego->cantidad_herramientas);
 
-	cargar_herramientas(juego, VELA, MAX_VELAS + primera_posicion_vector, &primera_posicion_vector);
-	cargar_herramientas(juego, PILA, MAX_PILAS + primera_posicion_vector, &primera_posicion_vector);
-	cargar_herramientas(juego, BENGALA, MAX_BENGALAS + primera_posicion_vector, &primera_posicion_vector);
+	mensaje_como_jugar(juego->personaje);
 	mostrar_juego(*juego);
 }
 
@@ -406,12 +416,10 @@ bool es_jugada_ingresada_valida(char jugada){
 }
 
 void mensaje_ingresar_jugada(char* jugada){
-	
 	printf("\nIngrese la jugada que desee realizar\n");
 	scanf(" %c", jugada);
-
 	while (!es_jugada_ingresada_valida(*jugada)){
-		printf("Tecla ingresada no valida, por favor ingrese las jugadas validas.");
+		printf("Tecla ingresada no valida, por favor una jugada valida.");
 		scanf(" %c", jugada);
 	}
 }
@@ -420,7 +428,6 @@ void encotrar_obstaculo_herramienta(juego_t* juego){
 	for (int i = 0; i < juego->cantidad_obstaculos; i++){
 		if((juego->personaje.posicion.fil == juego->obstaculos[i].posicion.fil) && (juego->personaje.posicion.col == juego->obstaculos[i].posicion.col)){
 			juego->obstaculos[i].visible = false;
-
 			if(juego->obstaculos[i].tipo == ARBOL){
 				if(juego->personaje.tipo == PARDO_OSO){
 					juego->personaje.tiempo_perdido += SUMAR_TIEMPO_PARDO_ARBOL;
@@ -442,7 +449,11 @@ void encotrar_obstaculo_herramienta(juego_t* juego){
 			juego->personaje.cantidad_elementos++;
 			if(juego->herramientas[i].tipo == PILA){
 				juego->personaje.mochila[juego->personaje.cantidad_elementos].tipo = PILA;
-				juego->personaje.mochila[juego->personaje.cantidad_elementos].movimientos_restantes = DURACION_MOVIMIENTOS_LINTERNA;
+				if(juego->personaje.tipo == PARDO_OSO){
+					juego->personaje.mochila[juego->personaje.cantidad_elementos].movimientos_restantes = DURACION_MOVIMIENTOS_LINTERNA_PARDO;
+				} else {
+					juego->personaje.mochila[juego->personaje.cantidad_elementos].movimientos_restantes = DURACION_MOVIMIENTOS_LINTERNA;
+				}
 			}
 			if(juego->herramientas[i].tipo == VELA){
 				juego->personaje.mochila[juego->personaje.cantidad_elementos].tipo = VELA;
@@ -460,12 +471,10 @@ void encotrar_obstaculo_herramienta(juego_t* juego){
 
 int calcular_cantidad_herramienta(juego_t* juego, char herramienta){
 	int cantidad_herramienta = SIN_HERRAMIENTA;
-
 	for (int i = 0; i < juego->personaje.cantidad_elementos; i++){
 				if(juego->personaje.mochila[i].tipo == herramienta)
 					cantidad_herramienta++;
 	}
-
 	return cantidad_herramienta;
 }
 
@@ -580,6 +589,58 @@ void ordenar_elementos_mochila(elemento_mochila_t mochila[MAX_HERRAMIENTAS], int
 	}
 }
 
+void cargar_koala(juego_t* juego, char item, int tope, int primer_item, char posicion){
+	int posicion_fil = 0;
+	int posicion_col = 0;
+	for (int i = primer_item ; i < tope; i++){
+		juego->obstaculos[i].tipo = item;
+		switch (posicion){
+			case ARRIBA:
+				posicion_fil = rand() % juego->personaje.posicion.fil;
+				posicion_col = juego->personaje.posicion.col;
+				break;
+			case ABAJO:
+				posicion_fil = juego->personaje.posicion.fil + rand() % MAX_FILAS;
+				posicion_col = juego->personaje.posicion.col;
+				break;
+			case IZQUIERDA:
+				posicion_fil = juego->personaje.posicion.fil;
+				posicion_col = rand() % juego->personaje.posicion.col;
+				break;
+			case DERECHA:
+				posicion_fil = juego->personaje.posicion.fil;
+				posicion_col = juego->personaje.posicion.col + rand() % MAX_COLUMAS;
+				break;
+			default:
+				posicion_fil = juego->personaje.posicion.fil;
+				posicion_col = rand() % MAX_COLUMAS;
+				break;
+		}
+		while (hay_algo_en_posicion(*juego, posicion_fil, posicion_col)){
+			switch (posicion){
+				case ARRIBA:
+					posicion_fil = rand() % juego->personaje.posicion.fil;
+					break;
+				case ABAJO:
+					posicion_fil = juego->personaje.posicion.fil + rand() % MAX_FILAS;
+					break;
+				case IZQUIERDA:
+					posicion_col = rand() % juego->personaje.posicion.col;
+					break;
+				case DERECHA:
+					posicion_col = juego->personaje.posicion.col + rand() % MAX_COLUMAS;
+					break;
+				default:
+					posicion_col = rand() % MAX_COLUMAS;
+					break;
+			}
+		}
+		juego->obstaculos[i].posicion.fil = posicion_fil;
+		juego->obstaculos[i].posicion.col = posicion_col;
+		juego->cantidad_obstaculos++;
+	}
+}
+
 void realizar_jugada(juego_t* juego, char jugada){
 	int fila_bengala = 0;
 	int columna_bengala = 0;
@@ -643,6 +704,7 @@ void realizar_jugada(juego_t* juego, char jugada){
 			printf("Linterna desactivada\n");
 		} else {
 			ocultar_elementos_del_campo(juego);
+			cargar_koala(juego, KOALAS, MAX_KOALAS + juego->cantidad_obstaculos, juego->cantidad_obstaculos, juego->personaje.ultimo_movimiento);
 			while((juego->personaje.mochila[i].tipo != PILA) && (i < juego->personaje.cantidad_elementos)){
 				i++;
 			}
@@ -708,7 +770,7 @@ void realizar_jugada(juego_t* juego, char jugada){
 		break;
 	case TIEMPO_RESTANTE:
 		system("clear");
-		printf("*Te quedan: %.0f segundos.\n", MAX_TIEMPO - tiempo_actual());
+		printf("»Te quedan: %.1f segundos.«\n", MAX_TIEMPO - tiempo_actual());
 		break;
 	}
 
@@ -719,7 +781,7 @@ void realizar_jugada(juego_t* juego, char jugada){
 			movimiento_vela(juego);
 	}
 
-	if( juego->personaje.elemento_en_uso == ELEMENTO_NO_USO){
+	if(juego->personaje.elemento_en_uso == ELEMENTO_NO_USO){
 		ordenar_elementos_mochila(juego->personaje.mochila, juego->personaje.cantidad_elementos);
 	}
 
@@ -736,7 +798,6 @@ void realizar_jugada(juego_t* juego, char jugada){
 			juego->personaje.cantidad_elementos--;
 		}
 	}
-
 	mostrar_juego(*juego);
 }
 

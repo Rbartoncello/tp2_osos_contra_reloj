@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <unistd.h>
 #include "test_de_personalidad.h"
 
 #define CANAL_TV_ANIME 'A'
@@ -42,7 +43,11 @@ const char PARDO = 'G';
 
 
 void mensaje_inicio_programa(){
-	printf("\tBienvenido al juego de escandaloso contra reloj©\n ¦Antes de empezar a jugar se le hara un test de personalidad para saber que tipo de escandalozo es¦\n\n");
+	printf("\tBienvenido al juego de Los Escandalosos contra reloj©\n");
+	printf ("¦Antes de empezar a jugar al juego de Los Escandalosos contra reloj© se le hara un test de personalidad para saber que tipo de escandaloso es¦\n\n");
+	printf("\n[Aguarde 7 segundos para que comience el juego de Los Escandalosos contra reloj©]\n");
+	sleep(7);
+	system("clear");
 }
 
 /*
@@ -81,7 +86,7 @@ bool es_grito_puntaje_valido(int grito_puntaje){
  		 Tomara el valor ingrasado por el usuario
  */
 void mensaje_selecion_canal_tv(char* canal_tv_seleccion){
-	printf("Vas a ver televisión un rato, pones el canal de:\n1. Anime (%c)\n2. Musica Pop (%c)\n3. Limpieza (%c)\n", CANAL_TV_ANIME, CANAL_TV_MUSICA, CANAL_TV_LIMPIEZA);
+	printf("Vas a ver televisión un rato, pones el canal de:\n1. Anime (Ingrese la tecla '%c' )\n2. Musica Pop (Ingrese la tecla '%c' )\n3. Limpieza (Ingrese la tecla '%c' )\n", CANAL_TV_ANIME, CANAL_TV_MUSICA, CANAL_TV_LIMPIEZA);
 	scanf("%c", canal_tv_seleccion);
 
 	while (!es_canal_tv_valido(*canal_tv_seleccion)){
@@ -96,7 +101,7 @@ void mensaje_selecion_canal_tv(char* canal_tv_seleccion){
  		 Tomara el valor ingrasado por el usuario
  */
 void mensaje_selecion_tipo_comida(char* tipo_comida_selection){
-	printf("Solo podes guardar un alimento en tu vianda:\n1. Bambú (%c)\n2. Pescado (%c)\n3. Focas (%c)\n", COMIDA_BAMBO, COMIDA_PEZCADO, COMIDA_FOCAS);
+	printf("Solo podes guardar un alimento en tu vianda:\n1. Bambú (Ingrese la tecla '%c' )\n2. Pescado (Ingrese la tecla '%c' )\n3. Focas (Ingrese la tecla '%c' )\n", COMIDA_BAMBO, COMIDA_PEZCADO, COMIDA_FOCAS);
 	scanf(" %c", tipo_comida_selection);
 
 	while (!es_comida_valida(*tipo_comida_selection)){
@@ -190,18 +195,14 @@ int calculo_puntaje_total(int puntaje_canal_tv, int puntaje_tipo_comida, int num
 
 /*
  * Pre: -
- * Post: Devolvera un mensaje al usuario con el tipo de oso que es
+ * Post: Devolvera el tipo de oso que es
  */
-void mensaje_tipo_oso(int puntaje, char* tipo_oso){
-
+void tipo_oso(int puntaje, char* tipo_oso){
 	if (puntaje >= PUNTAJE_MIN_OSO_POLAR && puntaje <= PUNTAJE_MAX_OSO_POLAR){
-		printf("Después de un arduo análisis , se determino que la personalidad más adecuada para definirte es: - Polar (%c) -. Podes ser el más joven , pero eso no te quita tu madurez.\n", POLAR);
 		*tipo_oso = POLAR;
 	} else if (puntaje >= PUNTAJE_MIN_OSO_PANDA && puntaje <= PUNTAJE_MAX_OSO_PANDA){
-		printf("Parece que sos el mas tierno y delicado del trío. Luego de obtener %i puntos , el súper test de personalidad determinó que tu personalidad escandolosa coincide con la de: - Panda (%c) - \n",puntaje, PANDA);
 		*tipo_oso = PANDA;
 	} else if (puntaje >= PUNTAJE_MIN_OSO_PARDO && puntaje <= PUNTAJE_MAX_OSO_PARDO){
-		printf("- Pardo (%c) - Es el oso escandaloso más coincidente con tu personalidad. ¿Como te va siendo el líder del trío?\n", PARDO);
 		*tipo_oso = PARDO;
 	}
 }
@@ -224,6 +225,6 @@ void test_de_personalidad(char* personalidad_detectada ){
 
 	system("clear");
 
-	mensaje_tipo_oso(puntaje, personalidad_detectada);
+	tipo_oso(puntaje, personalidad_detectada);
 
 };
