@@ -7,16 +7,6 @@
 #include "osos_contra_reloj.h"
 #include "utiles.h"
 
-#define RESET_COLOR "\x1b[0m"
-#define NEGRO_T    "\x1b[30m"
-#define ROJO_T     "\x1b[31m"
-#define VERDE_T    "\x1b[32m"
-#define AMARILLO_T "\x1b[33m"
-#define AZUL_T     "\x1b[34m"
-#define MAGENTA_T  "\x1b[35m"
-#define CYAN_T     "\x1b[36m"
-#define BLANCO_T   "\x1b[37m"
-#define BLANCO_F   "\x1b[47m"
 #define ARRIBA 'W'
 #define ABAJO 'S'
 #define DERECHA 'D'
@@ -28,6 +18,23 @@
 #define STR_PILAS "pilas"
 #define STR_VELAS "velas"
 #define STR_BENGALAS "bengalas"
+#define EMOJI_POLAR_OSO "\U0001f43b\u200D\u2744\uFE0F"
+#define EMOJI_PANDA_OSO "\U0001f43c"
+#define EMOJI_PARDO_OSO "\U0001f43b"
+#define EMOJI_ARRIBA "\u2B06\uFE0F"
+#define EMOJI_ABAJO "\u2B07\uFE0F"
+#define EMOJI_DERECHA "\u27A1\uFE0F"
+#define EMOJI_IZQUIERDA "\u2B05\uFE0F"
+#define EMOJI_ARBOL "\U0001f333"
+#define EMOJI_PIEDRA "\U0001faa8"
+#define EMOJI_KOALAS "\U0001f428"
+#define EMOJI_LINTERNA "\U0001f526"
+#define EMOJI_VELA "\U0001f56f\uFE0F"
+#define EMOJI_BENGALA "\U0001f9e8"
+#define EMOJI_PILA "\U0001f50b"
+#define EMOJI_CHLOE "\U0001f478"
+#define EMOJI_OSCURIDAD "\U0001f7eb"
+
 #define MAX_PALABRA 256
 const int MAX_TIEMPO = 120; 
 
@@ -211,15 +218,15 @@ void imprimir_elementos_en_mochila(personaje_t personaje){
 			}
 		}
 	}
-	printf("\t\t|Tenes %i pilas con %i movimientos cada una  |\n", contador_pilas, mov_pilas);
-	printf("\t\t|Tenes %i velas con %i movimientos cada una   |\n", contador_velas, mov_velas);
-	printf("\t\t|Tenes %i bengalas con %i movimientos cada una|\n", contador_bengalas, mov_bengalas);
+	printf("\t\t»Tenes %sx%i con %i movimientos cada una«\n",EMOJI_PILA, contador_pilas, mov_pilas);
+	printf("\t\t»Tenes %s x%i con %i movimientos cada una«\n",EMOJI_VELA ,contador_velas, mov_velas);
+	printf("\t\t»Tenes %sx%i con %i movimientos cada una«\n",EMOJI_BENGALA ,contador_bengalas, mov_bengalas);
 }
 
 void crear_campo(char campo[MAX_FILAS][MAX_COLUMAS]){
 	for (int i = 0; i < MAX_FILAS; i++){
 		for (int j = 0; j < MAX_COLUMAS; j++){
-			campo[i][j]=OSCURIDAD;	
+			campo[i][j]= OSCURIDAD;	
 		}
 	}
 }
@@ -275,48 +282,56 @@ void imprimir_elementos_campo(juego_t juego, char campo[MAX_FILAS][MAX_COLUMAS])
 		printf("\t»");
 		for (int j = 0; j < MAX_COLUMAS; j++){
 			if (campo[i][j]==CHLOE){
-				printf(NEGRO_T BLANCO_F " %c " RESET_COLOR, campo[i][j]);
+				printf(" %s ", EMOJI_CHLOE);
 			} else if (campo[i][j]== juego.personaje.tipo){
-				printf(AZUL_T " %c " RESET_COLOR, campo[i][j]);
+				if(juego.personaje.tipo == PANDA_OSO){
+					printf(" %s ", EMOJI_PANDA_OSO);
+				} else if(juego.personaje.tipo == PARDO_OSO){
+					printf(" %s ", EMOJI_PARDO_OSO);
+				} else if(juego.personaje.tipo == POLAR_OSO){
+					printf(" %s ", EMOJI_POLAR_OSO);
+				}
 			} else if (campo[i][j]== ARBOL){
-				printf(VERDE_T " %c " RESET_COLOR, campo[i][j]);
+				printf(" %s ", EMOJI_ARBOL);
 			} else if (campo[i][j]== PIEDRA){
-				printf(CYAN_T " %c " RESET_COLOR, campo[i][j]);
+				printf(" %s  ", EMOJI_PIEDRA);
 			} else if (campo[i][j]== KOALAS){
-				printf(MAGENTA_T " %c " RESET_COLOR, campo[i][j]);
+				printf(" %s ", EMOJI_KOALAS);
 			} else if (campo[i][j]== PILA){
-				printf(AMARILLO_T " %c " RESET_COLOR, campo[i][j]);
+				printf(" %s ", EMOJI_PILA);
+			} else if (campo[i][j]== VELA){
+				printf(" %s  ", EMOJI_VELA);
 			} else if (campo[i][j]== BENGALA){
-				printf(ROJO_T " %c " RESET_COLOR, campo[i][j]);
-			} else{
-				printf(" %c ", campo[i][j]);
+				printf(" %s ", EMOJI_BENGALA);
+			} else if (campo[i][j]== OSCURIDAD){
+				printf(" %s ", EMOJI_OSCURIDAD);
 			}
 		}
-		printf("«\t%i \n", i+1);
+		printf("«\n");
 	}
 }
 
 void mensaje_tipo_de_jugadas(){
 	printf("Juegadas validas:\n");
-	printf("\tIngrese la tecla '%c': Si el personaje debe moverse para ↑.\n", ARRIBA);
-	printf("\tIngrese la tecla '%c': Si el personaje debe moverse para ↓.\n", ABAJO);
-	printf("\tIngrese la tecla '%c': Si el personaje debe moverse para ←.\n", IZQUIERDA);
-	printf("\tIngrese la tecla '%c': Si el personaje debe moverse para →.\n", DERECHA);
-	printf("\tIngrese la tecla '%c': Si el personaje quiere encender una linterna.\n",  ENCENDER_APAGAR_LINTERNA);
-	printf("\tIngrese la tecla '%c': Si el personaje quiere encender una vela.\n",  ENCENDER_APAGAR_VELA);
-	printf("\tIngrese la tecla '%c': Si el personaje quiere encender la bengala.\n",  ENCENDER_APAGAR_BENGALA);
+	printf("\tIngrese la tecla '%c': Si el personaje debe moverse para %s\n", ARRIBA, EMOJI_ARRIBA);
+	printf("\tIngrese la tecla '%c': Si el personaje debe moverse para %s\n", ABAJO, EMOJI_ABAJO );
+	printf("\tIngrese la tecla '%c': Si el personaje debe moverse para %s\n", IZQUIERDA, EMOJI_IZQUIERDA);
+	printf("\tIngrese la tecla '%c': Si el personaje debe moverse para %s\n", DERECHA, EMOJI_DERECHA);
+	printf("\tIngrese la tecla '%c': Si el personaje quiere encender una %s\n",  ENCENDER_APAGAR_LINTERNA, EMOJI_LINTERNA);
+	printf("\tIngrese la tecla '%c': Si el personaje quiere encender una %s\n",  ENCENDER_APAGAR_VELA, EMOJI_VELA);
+	printf("\tIngrese la tecla '%c': Si el personaje quiere encender la %s\n",  ENCENDER_APAGAR_BENGALA, EMOJI_BENGALA);
 	printf("\tIngrese la tecla '%c': Si Si el personaje quiere ver el tiempo restante.\n",  TIEMPO_RESTANTE);
 }
 
 void mensaje_obstaculos_herramientas(){
 	printf("Obstaculos:");
-	printf(VERDE_T " %c " RESET_COLOR"(Arbol),", ARBOL);
-	printf(CYAN_T " %c " RESET_COLOR"(Piedra) y", PIEDRA);
-	printf(MAGENTA_T " %c " RESET_COLOR"(Koala Nom Nom y sus sekoalaces)\n", KOALAS);
+	printf(" %s  (Arbol),", EMOJI_ARBOL);
+	printf(" %s  ""(Piedra) y", EMOJI_PIEDRA);
+	printf(" %s ""(Koala Nom Nom y sus sekoalaces)\n", EMOJI_KOALAS);
 	printf("Herramietas:");
-	printf(AMARILLO_T " %c " RESET_COLOR"(Pila, para la linterna),", PILA);
-	printf(" %c (Vela) y", VELA);
-	printf(ROJO_T " %c " RESET_COLOR"(Bengala)\n", BENGALA);
+	printf(" %s ""(Pila, para la %s),", EMOJI_PILA, EMOJI_LINTERNA);
+	printf(" %s (Vela) y", EMOJI_VELA);
+	printf(" %s ""(Bengala)\n", EMOJI_BENGALA);
 }
 
 void mostrar_juego(juego_t juego){
@@ -362,22 +377,22 @@ void mensaje_como_jugar(personaje_t personaje){
 	double tiempo_perdido_arbol = 0;
 	printf("Despues de un extenso analisis de las respuestas que nos dio llegamos que usted es: ");
 	if(personaje.tipo == POLAR_OSO){
-		printf("- Polar (%c) -\n", POLAR_OSO);
+		printf("- Polar (%s) -\n", EMOJI_POLAR_OSO);
 		tiempo_perdido_arbol = SUMAR_TIEMPO_NO_PARDO_ARBOL;
 	} else if(personaje.tipo == PARDO_OSO){
-		printf("- Pardo (%c) -\n", PARDO_OSO);
+		printf("- Pardo (%s) -\n", EMOJI_PARDO_OSO);
 		tiempo_perdido_arbol = SUMAR_TIEMPO_PARDO_ARBOL;
 	} else if(personaje.tipo == PANDA_OSO){
-		printf("- Panda (%c) -\n", PANDA_OSO);
+		printf("- Panda (%s) -\n", EMOJI_PANDA_OSO);
 		tiempo_perdido_arbol = SUMAR_TIEMPO_NO_PARDO_ARBOL;
 	}
-	printf("\nEl objetivo del juego es encontrar a Chloe (" NEGRO_T BLANCO_F " %c " RESET_COLOR") en menos de %i segundos\n", CHLOE, MAX_TIEMPO);
+	printf("\nEl objetivo del juego es encontrar a Chloe ( %s ) en menos de %i segundos\n", EMOJI_CHLOE, MAX_TIEMPO);
 	printf("\nPara eso vas a tener una mochila con:\n");
 	imprimir_elementos_en_mochila(personaje);
-	printf("\nPero ojo porque si te encotras y te pones en la misma posicion que:\n");
-	printf("\tUn arbol ("VERDE_T " %c " RESET_COLOR") vas a perder %.1f segundos\n", ARBOL, tiempo_perdido_arbol);
-	printf("\tUna piedra ("CYAN_T " %c " RESET_COLOR") vas a perder %.1f segundos\n", PIEDRA, SUMAR_TIEMPO_PIEDRA);	
-	printf("\tEl Koala Nom Nom o sus sekoalaces ("MAGENTA_T " %c " RESET_COLOR") vas a volver la la primera columna\n", KOALAS);
+	printf("\nPero ojo porque si te encontras y te pones en la misma posicion que:\n");
+	printf("\tUn arbol ( %s ) vas a perder %.1f segundos\n", EMOJI_ARBOL, tiempo_perdido_arbol);
+	printf("\tUna piedra ( %s  ) vas a perder %.1f segundos\n", EMOJI_PIEDRA, SUMAR_TIEMPO_PIEDRA);	
+	printf("\tEl Koala Nom Nom o sus sekoalaces ( %s ) vas a volver la la primera columna\n", EMOJI_KOALAS);
 	printf("\n[Aguarde 15 segundos para que comience el juego de Los Escandalosos contra reloj©]\n");
 	sleep(15);
 	system("clear");
@@ -411,14 +426,14 @@ void inicializar_juego(juego_t* juego, char tipo_personaje){
 	mostrar_juego(*juego);
 }
 
-bool es_jugada_ingresada_valida(char jugada){
+bool es_jugada_valida(char jugada){
 	return (jugada == ARRIBA || jugada == ABAJO || jugada == DERECHA || jugada == IZQUIERDA || jugada == ENCENDER_APAGAR_LINTERNA || jugada == ENCENDER_APAGAR_VELA || jugada == ENCENDER_APAGAR_BENGALA || jugada == TIEMPO_RESTANTE);
 }
 
 void mensaje_ingresar_jugada(char* jugada){
 	printf("\nIngrese la jugada que desee realizar\n");
 	scanf(" %c", jugada);
-	while (!es_jugada_ingresada_valida(*jugada)){
+	while (!es_jugada_valida(*jugada)){
 		printf("Tecla ingresada no valida, por favor una jugada valida.");
 		scanf(" %c", jugada);
 	}

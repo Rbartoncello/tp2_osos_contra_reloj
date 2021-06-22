@@ -43,8 +43,21 @@ const char PARDO = 'G';
 
 
 void mensaje_inicio_programa(){
-	printf("\tBienvenido al juego de Los Escandalosos contra reloj©\n");
-	printf ("¦Antes de empezar a jugar al juego de Los Escandalosos contra reloj© se le hara un test de personalidad para saber que tipo de escandaloso es¦\n\n");
+	printf("\
+########  #### ######## ##    ## ##     ## ######## ##    ## #### ########   #######        ###    ##                ## ##     ## ########  ######    #######     ########  ########  ##  \n\
+##     ##  ##  ##       ###   ## ##     ## ##       ###   ##  ##  ##     ## ##     ##      ## ##   ##                ## ##     ## ##       ##    ##  ##     ##    ##     ## ##       #### \n\
+##     ##  ##  ##       ####  ## ##     ## ##       ####  ##  ##  ##     ## ##     ##     ##   ##  ##                ## ##     ## ##       ##        ##     ##    ##     ## ##        ##  \n\
+########   ##  ######   ## ## ## ##     ## ######   ## ## ##  ##  ##     ## ##     ##    ##     ## ##                ## ##     ## ######   ##   #### ##     ##    ##     ## ######        \n\
+##     ##  ##  ##       ##  ####  ##   ##  ##       ##  ####  ##  ##     ## ##     ##    ######### ##          ##    ## ##     ## ##       ##    ##  ##     ##    ##     ## ##        ##  \n\
+##     ##  ##  ##       ##   ###   ## ##   ##       ##   ###  ##  ##     ## ##     ##    ##     ## ##          ##    ## ##     ## ##       ##    ##  ##     ##    ##     ## ##       #### \n\
+########  #### ######## ##    ##    ###    ######## ##    ## #### ########   #######     ##     ## ########     ######   #######  ########  ######    #######     ########  ########  ##  \n");
+	printf("\
+ \t _                   ___                              _          _                                             _                                _           _ \n\
+ \t| |     ___   ___   | __|  ___  __   __ _   _ _    __| |  __ _  | |  ___   ___  ___   ___    __   ___   _ _   | |_   _ _   __ _     _ _   ___  | |  ___    (_)\n\
+ \t| |__  / _ \\ (_-<   | _|  (_-< / _| / _` | | ' \\  / _` | / _` | | | / _ \\ (_-< / _ \\ (_-<   / _| / _ \\ | ' \\  |  _| | '_| / _` |   | '_| / -_) | | / _ \\   | |\n\
+ \t|____| \\___/ /__/   |___| /__/ \\__| \\__,_| |_||_| \\__,_| \\__,_| |_| \\___/ /__/ \\___/ /__/   \\__| \\___/ |_||_|  \\__| |_|   \\__,_|   |_|   \\___| |_| \\___/  _/ |\n\
+ \t                                                                                                                                                         |__/ \n");
+	printf ("\n	¦Antes de empezar a jugar al juego de Los Escandalosos contra reloj© se le hara un test de personalidad para saber que tipo de escandaloso es¦\n\n");
 	printf("\n[Aguarde 7 segundos para que comience el juego de Los Escandalosos contra reloj©]\n");
 	sleep(7);
 	system("clear");
