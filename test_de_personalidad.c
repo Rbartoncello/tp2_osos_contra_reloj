@@ -52,11 +52,14 @@ void mensaje_inicio_programa(){
 ##     ##  ##  ##       ##   ###   ## ##   ##       ##   ###  ##  ##     ## ##     ##    ##     ## ##          ##    ## ##     ## ##       ##    ##  ##     ##    ##     ## ##       #### \n\
 ########  #### ######## ##    ##    ###    ######## ##    ## #### ########   #######     ##     ## ########     ######   #######  ########  ######    #######     ########  ########  ##  \n");
 	printf("\
- \t _                   ___                              _          _                                             _                                _           _ \n\
- \t| |     ___   ___   | __|  ___  __   __ _   _ _    __| |  __ _  | |  ___   ___  ___   ___    __   ___   _ _   | |_   _ _   __ _     _ _   ___  | |  ___    (_)\n\
- \t| |__  / _ \\ (_-<   | _|  (_-< / _| / _` | | ' \\  / _` | / _` | | | / _ \\ (_-< / _ \\ (_-<   / _| / _ \\ | ' \\  |  _| | '_| / _` |   | '_| / -_) | | / _ \\   | |\n\
- \t|____| \\___/ /__/   |___| /__/ \\__| \\__,_| |_||_| \\__,_| \\__,_| |_| \\___/ /__/ \\___/ /__/   \\__| \\___/ |_||_|  \\__| |_|   \\__,_|   |_|   \\___| |_| \\___/  _/ |\n\
- \t                                                                                                                                                         |__/ \n");
+\t╔═══╗╔═══╗╔═══╗╔═══╗    ╔═══╗╔═══╗╔═╗ ╔╗╔════╗╔═══╗╔═══╗    ╔═══╗╔═══╗╔╗   ╔═══╗  ╔╗	  (c).-.(c)  \n\
+\t║╔═╗║║╔═╗║║╔═╗║║╔═╗║    ║╔═╗║║╔═╗║║║╚╗║║║╔╗╔╗║║╔═╗║║╔═╗║    ║╔═╗║║╔══╝║║   ║╔═╗║  ║║	   / ._. \\   \n\
+\t║║ ║║║╚══╗║║ ║║║╚══╗    ║║ ╚╝║║ ║║║╔╗╚╝║╚╝║║╚╝║╚═╝║║║ ║║    ║╚═╝║║╚══╗║║   ║║ ║║  ║║	 __\\( Y )/__ \n\
+\t║║ ║║╚══╗║║║ ║║╚══╗║    ║║ ╔╗║║ ║║║║╚╗║║  ║║  ║╔╗╔╝║╚═╝║    ║╔╗╔╝║╔══╝║║ ╔╗║║ ║║╔╗║║	(_.-/'-'\\-._)\n\
+\t║╚═╝║║╚═╝║║╚═╝║║╚═╝║    ║╚═╝║║╚═╝║║║ ║║║ ╔╝╚╗ ║║║╚╗║╔═╗║    ║║║╚╗║╚══╗║╚═╝║║╚═╝║║╚╝║	   || O ||   \n\
+\t╚═══╝╚═══╝╚═══╝╚═══╝    ╚═══╝╚═══╝╚╝ ╚═╝ ╚══╝ ╚╝╚═╝╚╝ ╚╝    ╚╝╚═╝╚═══╝╚═══╝╚═══╝╚══╝	 _.' `-' '._ \n\
+												(.-./`-'\\.-.)\n\
+												 `-'     `-'\n");
 	printf ("\n	¦Antes de empezar a jugar al juego de Los Escandalosos contra reloj© se le hara un test de personalidad para saber que tipo de escandaloso es¦\n\n");
 	printf("\n[Aguarde 7 segundos para que comience el juego de Los Escandalosos contra reloj©]\n");
 	sleep(7);
@@ -99,7 +102,7 @@ bool es_grito_puntaje_valido(int grito_puntaje){
  		 Tomara el valor ingrasado por el usuario
  */
 void mensaje_selecion_canal_tv(char* canal_tv_seleccion){
-	printf("Vas a ver televisión un rato, pones el canal de:\n1. Anime (Ingrese la tecla '%c' y toque Enter)\n2. Musica Pop (Ingrese la tecla '%c' y toque Enter)\n3. Limpieza (Ingrese la tecla '%c' y toque Enter)\n", CANAL_TV_ANIME, CANAL_TV_MUSICA, CANAL_TV_LIMPIEZA);
+	printf("\nVas a ver televisión un rato, pones el canal de:\n1. Anime (Ingrese la tecla '%c' y toque Enter)\n2. Musica Pop (Ingrese la tecla '%c' y toque Enter)\n3. Limpieza (Ingrese la tecla '%c' y toque Enter)\n\n", CANAL_TV_ANIME, CANAL_TV_MUSICA, CANAL_TV_LIMPIEZA);
 	scanf("%c", canal_tv_seleccion);
 
 	while (!es_canal_tv_valido(*canal_tv_seleccion)){
@@ -114,7 +117,7 @@ void mensaje_selecion_canal_tv(char* canal_tv_seleccion){
  		 Tomara el valor ingrasado por el usuario
  */
 void mensaje_selecion_tipo_comida(char* tipo_comida_selection){
-	printf("Solo podes guardar un alimento en tu vianda:\n1. Bambú (Ingrese la tecla '%c' y toque Enter)\n2. Pescado (Ingrese la tecla '%c' y toque Enter)\n3. Focas (Ingrese la tecla '%c' y toque Enter)\n", COMIDA_BAMBO, COMIDA_PEZCADO, COMIDA_FOCAS);
+	printf("\nSolo podes guardar un alimento en tu vianda:\n1. Bambú (Ingrese la tecla '%c' y toque Enter)\n2. Pescado (Ingrese la tecla '%c' y toque Enter)\n3. Focas (Ingrese la tecla '%c' y toque Enter)\n\n", COMIDA_BAMBO, COMIDA_PEZCADO, COMIDA_FOCAS);
 	scanf(" %c", tipo_comida_selection);
 
 	while (!es_comida_valida(*tipo_comida_selection)){
@@ -129,7 +132,7 @@ void mensaje_selecion_tipo_comida(char* tipo_comida_selection){
  		 Tomara el valor ingrasado por el usuario
  */
 void mensaje_selecion_piso_edificio(int* numero_piso_edificio_selection){
-	printf("Encontras la olla con el oro del duende maldito y te compras una torre con tus dos hermanos de %i pisos.\n¿En que piso te gustaría vivir?: \n[Ingrese un numero del 1 al %i y toque Enter] ", MAX_PISO_EDIFICIO, MAX_PISO_EDIFICIO);
+	printf("\nEncontras la olla con el oro del duende maldito y te compras una torre con tus dos hermanos de %i pisos.\n¿En que piso te gustaría vivir?: \n[Ingrese un numero del 1 al %i y toque Enter] ", MAX_PISO_EDIFICIO, MAX_PISO_EDIFICIO);
 	scanf("%i", numero_piso_edificio_selection);
 
 	while (!es_numero_piso_edificio_valido(*numero_piso_edificio_selection)){
@@ -144,7 +147,7 @@ void mensaje_selecion_piso_edificio(int* numero_piso_edificio_selection){
          Tomara el valor ingrasado por el usuario
  */
 void mensaje_selecion_nivel_grito(int* nivel_grito_selection){
-	printf("¡Oh, el duende maldito se entero que le robaste su oro y viene por ti!\n¿Que tan fuerte gritas del %i al %i? Siendo %i no gritar y %i desgarrarse la garganta:\n[Ingrese un numero del %i al %i y toque Enter] ", MIN_PODER_GRITO, MAX_PODER_GRITO, MIN_PODER_GRITO, MAX_PODER_GRITO, MIN_PODER_GRITO, MAX_PODER_GRITO);
+	printf("\n¡Oh, el duende maldito se entero que le robaste su oro y viene por ti!\n¿Que tan fuerte gritas del %i al %i? Siendo %i no gritar y %i desgarrarse la garganta:\n[Ingrese un numero del %i al %i y toque Enter] ", MIN_PODER_GRITO, MAX_PODER_GRITO, MIN_PODER_GRITO, MAX_PODER_GRITO, MIN_PODER_GRITO, MAX_PODER_GRITO);
 	scanf("%i", nivel_grito_selection);
 
 	while (!es_grito_puntaje_valido(*nivel_grito_selection)){

@@ -90,4 +90,10 @@ void realizar_jugada(juego_t* juego, char jugada);
  */
 void mostrar_juego(juego_t juego);
 
+/*
+ * Devolvera true en caso de ser una jugada valida (W,A,S,D,L,V,E o T)
+ * Devolvera false en caso contrario.
+ */
+bool es_jugada_valida(char jugada);
+
 #endif /* __OSOS_CONTRA_RELOJ_H__ */
